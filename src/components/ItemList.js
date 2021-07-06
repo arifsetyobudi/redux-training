@@ -8,6 +8,32 @@ import { connect } from "react-redux";
 class ItemList extends React.Component {
     constructor(props) {
         super(props);
+        this.state = {
+            loading: false,
+            error: null
+        }
+    }
+
+    componentDidMount() {
+        // if (!this.props.itemsLoaded) {
+        //     this.initData();
+        // }        
+        this.initData();
+    }
+
+    initData = () => {
+        this.setState({ loading: true })
+        this.props.onItem.fetchItems().then(() => {
+            if (!this.props.loading) {
+                if (!this.props.error) {
+                    console.log("items fetched")
+                } else {
+                    alert(`Some error ${this.props.error}`)
+                }
+            }
+
+            this.setState({ loading: this.props.loading })            
+        });
     }
 
     deleteItem = (id) => {
@@ -27,6 +53,11 @@ class ItemList extends React.Component {
                         <td style={{ width: "100px" }}>#</td>
                     </thead>
                     <tbody>
+                        {this.state.loading &&
+                            <tr>
+                                <td colSpan="4">Loading....</td>
+                            </tr>
+                        }
                         {this.props.items.map((item) => {
                             return (
                                 <tr key={item.id}>
@@ -50,6 +81,9 @@ class ItemList extends React.Component {
 const mapStateToProps = state => {
     return {
         items: state.item.items,
+        itemsLoaded: state.item.itemsLoaded,
+        loading: state.item.loading,
+        error: state.item.error,
     };
 };
 

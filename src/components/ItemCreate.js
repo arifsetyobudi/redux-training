@@ -27,11 +27,12 @@ class ItemCreate extends React.Component {
 
     createItem = () => {
         const item = this.state.item;
-        Promise.resolve(
-            this.props.onItem.createItem(item)
-        ).then(() => {
-            this.props.history.push("/items")
-        });
+        this.props.onItem.createItem(item)
+            .then(() => {
+                if (!this.props.loading && !this.props.error) {
+                    this.props.history.push("/items")
+                }
+            });
     }
 
     render() {
@@ -77,7 +78,8 @@ class ItemCreate extends React.Component {
 
 const mapStateToProps = state => {
     return {
-
+        loading: state.item.loading,
+        error: state.item.error,
     };
 };
 

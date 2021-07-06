@@ -9,6 +9,7 @@ class ItemDetail extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            id: "",
             item: {
                 id: Math.random(),
                 itemName: "",
@@ -29,11 +30,28 @@ class ItemDetail extends React.Component {
             match: { params },
         } = this.props;
 
-        var id = params.id;
+        const id = params.id;
+        this.setState({ id })
 
-        Promise.resolve(
-            this.props.onItem.viewItem(id)
-        ).then(() => {
+        // Promise.resolve(
+        //     this.props.onItem.viewItem(id)
+        // ).then(() => {
+        //     const item = this.state.item;
+        //     if (item != undefined) {
+        //         item.id = this.props.item.id;
+        //         item.itemName = this.props.item.itemName;
+        //         item.price = this.props.item.price;
+        //         item.unitOfMeasure = this.props.item.unitOfMeasure;
+        //         this.setState({
+        //             item
+        //         })
+        //     }
+        // })
+        //     .catch((err) => {
+        //         this.props.history.push("/items")
+        //     });
+
+        this.props.onItem.fetchItem(id).then(() => {
             const item = this.state.item;
             if (item != undefined) {
                 item.id = this.props.item.id;
@@ -58,11 +76,11 @@ class ItemDetail extends React.Component {
     }
 
     updateItem = () => {
-        const item = this.state.item;
-        Promise.resolve(
-            this.props.onItem.updateItem(item)
-        ).then(() => {
-            this.props.history.push("/items")
+        const { id, item } = this.state;
+        this.props.onItem.updateItem(id, item).then(() => {
+            if (!this.props.loading && !this.props.error) {
+                this.props.history.push("/items")
+            }
         });
     }
 
