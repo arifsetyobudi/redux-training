@@ -2,7 +2,7 @@ import './App.css';
 
 import * as authActions from "../src/store/actions/authAction";
 
-import { BrowserRouter, Link, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Link, Route, Switch, withRouter } from 'react-router-dom';
 
 import Counter from './components/Counter';
 import Home from './components/Home';
@@ -19,11 +19,20 @@ import { connect } from "react-redux";
 import logo from './logo.svg';
 
 class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      loading: true,
+    };
+  }
 
   componentDidMount() {
     Promise.resolve(
       this.props.onAuth.authCheckToken()
     ).then(() => {
+      this.setState({
+        loading: false,
+      });
     });
   }
 
@@ -35,54 +44,58 @@ class App extends React.Component {
     return (
       <BrowserRouter>
         <div style={{ padding: "20px" }}>
-          {this.props.token ? "Authenticate" : "UnAuthenticate"}<br />
-          {/* <Counter></Counter> */}
-
-          {this.props.token ?
+          {!this.state.loading &&
             <React.Fragment>
-              <Link to="/" >Home</Link><br />
-              <Link to="/items" >Item List</Link><br />
-              <Link onClick={this.logout} >Logout</Link>
-            </React.Fragment>
-            :
-            <Link to="/login" >Login</Link>
-          }
-          <hr />
+              {this.props.token ? "Authenticate" : "UnAuthenticate"}<br />
+              {/* <Counter></Counter> */}
 
-          <Switch>
-            {/* <Route exact path="/">
-              <Home />
-            </Route> */}
-            <ProtectedRoute
-              isAuthenticated={this.props.token ? true : false}
-              path="/"
-              exact
-              component={Home}
-            ></ProtectedRoute>
-            <ProtectedRoute
-              isAuthenticated={this.props.token ? true : false}
-              path="/items"
-              exact
-              component={ItemList}>
-            </ProtectedRoute>
-            {/* <Route exact path="/items">
-              <ItemList />
-            </Route> */}
-            <Route path="/items/create">
-              <ItemCreate />
-            </Route>
-            <Route path="/items/:id">
-              <ItemDetail />
-            </Route>
-            <LoginRoute
-              isAuthenticated={this.props.token ? true : false}
-              path="/login"
-              component={Login}
-            />
-            {/* <Route path="/login">
-              <Login />
-            </Route> */}
-          </Switch>
+              {this.props.token ?
+                <React.Fragment>
+                  <Link to="/" >Home</Link><br />
+                  <Link to="/items" >Item List</Link><br />
+                  <Link onClick={this.logout} >Logout</Link>
+                </React.Fragment>
+                :
+                <Link to="/login" >Login</Link>
+              }
+              <hr />
+
+              <Switch>
+                {/* <Route exact path="/">
+                  <Home />
+                </Route> */}
+                <ProtectedRoute
+                  isAuthenticated={this.props.token ? true : false}
+                  path="/"
+                  exact
+                  component={Home}
+                ></ProtectedRoute>
+                <ProtectedRoute
+                  isAuthenticated={this.props.token ? true : false}
+                  path="/items"
+                  exact
+                  component={ItemList}>
+                </ProtectedRoute>
+                {/* <Route exact path="/items">
+                  <ItemList />
+                </Route> */}
+                <Route path="/items/create">
+                  <ItemCreate />
+                </Route>
+                <Route path="/items/:id">
+                  <ItemDetail />
+                </Route>
+                <LoginRoute
+                  isAuthenticated={this.props.token ? true : false}
+                  path="/login"
+                  component={Login}
+                />
+                {/* <Route path="/login">
+                  <Login />
+                </Route> */}
+              </Switch>
+            </React.Fragment>
+          }
         </div>
       </BrowserRouter>
     );
